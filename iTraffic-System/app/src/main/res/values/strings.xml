@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">iTraffic-System</string>
+
+    <string name="main_menu_title" > Main Menu </string>
+    <string name="options_title" > Options </string>
+    <string name="about_title" > About App </string>
+    <string name="ampel_service_title" > Ampel Service </string>
+</resources>
