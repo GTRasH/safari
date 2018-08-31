@@ -26,7 +26,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    //To send requests with XML
+// Um Requests mit XML zu senden
     implementation 'com.mcxiaoke.volley:library:1.0.17'
     implementation('org.simpleframework:simple-xml:2.7.+') {
         exclude module: 'stax'
@@ -34,4 +34,14 @@ dependencies {
         exclude module: 'xpp3'
     }
     implementation 'com.android.support:design:27.1.0'
+
+// Fuer die Socket-Verbindung
+    implementation "org.java-websocket:Java-WebSocket:1.3.9"
+
+
+// Fuer die Deserealizierung des XMLs Datei und die Speicherung jeder Element des XMLs
+    implementation "org.simpleframework:simple-xml:2.7.1"
+
+
+
 }

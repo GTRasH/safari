@@ -46,37 +46,17 @@
                     android:id="@+id/checkBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Dienst 1" />
+                    android:checked="true"
+                    android:clickable = "false"
+                    android:text="GLOSA" />
 
-                <CheckBox
-                    android:id="@+id/checkBox4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dienst 2" />
 
-                <CheckBox
-                    android:id="@+id/checkBox2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dienst 3" />
-
-                <CheckBox
-                    android:id="@+id/checkBox3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dienst 4" />
 
             </LinearLayout>
 
         </ScrollView>
 
-        <Button
-            android:id="@+id/updateServicesButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Auf neue Dienste Prüfen"
-            android:layout_gravity="end"
-            />
+
 
     </LinearLayout>
 
@@ -113,22 +93,24 @@
                     android:layout_height="wrap_content">
 
                     <RadioButton
-                        android:id="@+id/radioButton"
+                        android:id="@+id/radioButtonKraftfahrzeug"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+
+                        android:text="Kraftfahrzeug" />
+
+                    <RadioButton
+                        android:id="@+id/radioButtonFahrrad"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Fahrrad" />
 
                     <RadioButton
-                        android:id="@+id/radioButton2"
+                        android:id="@+id/radioButtonZufuß"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Motorrad" />
-
-                    <RadioButton
-                        android:id="@+id/radioButton3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Kraftfahrzeug" />
+                        android:text="Zu fuß" />
 
                 </RadioGroup>
 

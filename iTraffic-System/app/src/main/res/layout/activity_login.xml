@@ -51,6 +51,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:hint="Name"
+                android:text="test"
                 android:paddingTop="10dp" />
 
             <EditText
@@ -60,6 +61,7 @@
                 android:ems="10"
                 android:inputType="textPassword"
                 android:hint="Password"
+                android:text="test"
                 android:paddingTop="20dp" />
 
         </LinearLayout>

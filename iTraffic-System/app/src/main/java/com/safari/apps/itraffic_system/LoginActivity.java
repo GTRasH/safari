@@ -1,27 +1,41 @@
 package com.safari.apps.itraffic_system;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.safari.apps.itraffic_system.Models.xml.Safari;
+import com.safari.apps.itraffic_system.Models.xml.spat.SPAT;
 import com.safari.apps.itraffic_system.Utils.SafariService;
+import com.safari.apps.itraffic_system.Utils.TcpClient;
 
-public class LoginActivity extends AppCompatActivity {
+/*
+    Diese Klasse fuerth der Nutzer durch das Loginprozess
+*/
 
-    //Declaring variables
+public class LoginActivity extends AppCompatActivity implements TcpClient.OnMessageReceived {
+
     Button loginButton;
     EditText usernameText;
     EditText passwordText;
 
-    SafariService sService;
+    Boolean connecting = false;
+    Boolean auth = false;
+
+    LoginActivity me = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        usernameText = findViewById(R.id.usernameText);
+        passwordText = findViewById(R.id.passwordText);
 
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -33,103 +47,95 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-
-
-//*******Using the loginDaten to move to mainActivity if we get an ok from server*******
-
-/*        mService = ApiUtils.getEwesService();
-        String savedUser = ApiUtils.getInstance().preferences.getString("savedUser","");
-
-        if (savedUser.length()>0) {
-            Gson gson = new Gson();
-            LoginResponse loginResponse = gson.fromJson(savedUser, LoginResponse.class);
-            if (loginResponse.getOk()){
-
-                moveToMain();
-            }
-        }*/
-
-    }
-
-
-    public void moveToMain(){
-
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
-
-    }
-
-//*******The logic of Login*******
-
-/*    public void login(View view ) {
-
-        final String user = usernameText.getText().toString();
-        final String pass = passwordText.getText().toString();
-
-        if (user.length()>0 && pass.length()>0){
-
-
-            Login l = new Login("User1", "password");
-
-            Login login = new Login(user,pass);
-
-            sService.login(login).enqueue(new Callback<LoginResponse>() {
-                @Override
-                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-
-                    if (response.isSuccessful()) {
-
-                        //Toast.makeText(me, "Loading", Toast.LENGTH_SHORT).show();
-
-                        LoginResponse loginResponse = response.body();
-
-                        String cookie = response.headers().get("Set-Cookie");
-                        //  cookie =  cookie.substring(cookie.indexOf("="),cookie.indexOf(";"));
-                        //  cookie = cookie.replace("=","");
-
-                        Gson gson = new Gson();
-                        ApiUtils.getInstance().editor.putString("savedUser", gson.toJson(loginResponse));
-                        ApiUtils.getInstance().editor.putString("AuthSession", cookie);
-
-                        ApiUtils.getInstance().editor.putString("user", user);
-                        ApiUtils.getInstance().editor.putString("password", pass);
-
-
-                        ApiUtils.getInstance().editor.commit();
-
-                        moveToMain();
-
-                    } else {
-                        // int statusCode = response.code();
-                        try {
-
-
-                            Gson gson = new Gson();
-                            ErrorResponse error = gson.fromJson(response.errorBody().string(), ErrorResponse.class);
-
-                            Toast.makeText(me, error.reason, Toast.LENGTH_LONG).show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-
-                }
-
-                @Override
-                public void onFailure(Call<LoginResponse> call, Throwable t) {
-
-                    Toast.makeText(me, "Keine Internet Verbindung", Toast.LENGTH_LONG).show();
-                }
-            });
-        }else{
-            Toast.makeText(me, "Bitte Username und Password eingeben", Toast.LENGTH_LONG).show();
+        if (BuildConfig.DEBUG) {
+            usernameText.setText("test");
+            passwordText.setText("test");
 
         }
 
+    }
 
-    }*/
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        SafariService service = SafariService.getInstance();
+        service.handler = this;
+    }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();  
+
+        SafariService service = SafariService.getInstance();
+        service.handler = null;
+    }
+
+
+    @Override
+    public void messageReceived(Safari message , String original) {
+
+//Sendet die Logindaten nachdem der Server sie gefragt hat.
+        if (message.getHeader().getRequest().equals("auth")&&!auth){
+            SafariService service = SafariService.getInstance();
+
+            service.sendMessage(
+                    "<?xml version=\"1.0\"?>\n" +
+                    "<safari>\n" +
+                    "\t<header>\n" +
+                    "\t\t<request></request>\n" +
+                    "\t\t<response>auth</response>\n" +
+                    "\t</header>\n" +
+                    "\t<data>\n" +
+                    "\t\t<user>"+ usernameText.getText() +"</user>\n" +
+                    "\t\t<pass>"+ passwordText.getText() +"</pass>\n" +
+                    "\t</data>\n" +
+                    "</safari>\n");
+            auth=true;
+        }
+        else   if (message.getHeader().getRequest().equals("auth")&&auth){
+
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+
+
+// Sobald die Implementierung einer Fehlerhafte Anmeldung bei der Seite des Servers fertig ist:
+
+        /* SafariService service =  SafariService.getInstance();
+
+            service.disconnectWebSocket();
+            connecting= false;
+            auth=false;
+            Toast.makeText(me,
+                    "Error login", Toast.LENGTH_SHORT).show();*/
+
+        }
+    }
+
+/* 
+    Der Server fragt zweimal die Authetifizierungsdaten. 
+    Sobald die zweite nachfrage kommt, wird der nutzer zum MainMenu Activity geschickt
+*/
+    @Override
+    public void messageReceived(SPAT message, String original) {
+
+    }
+
+    public void moveToMain(){
+
+        if(!connecting){
+
+            connecting= true;
+
+
+            SafariService service =  SafariService.getInstance();
+
+            service.connectWebSocket();
+
+
+        }
+
+    }
 
 }
